@@ -46,7 +46,7 @@ def create_patients_table(cur, conn):
 # ADD FLUFFLE TO THE TABLE
 def add_fluffle(cur, conn):
     cur.execute("INSERT INTO Patients (pet_id, name, species_id, age, cuteness, agressiveness) VALUES (0, 'Fluffle', 0, 3, 90, 100)")
-    #cur.execute("INSERT INTO Patients (pet_id, name, species_id, age, cuteness, agressiveness) VALUES (?, ?, ?, ?, ?, ?) (0, 'Fluffle', 0, 3, 90, 100)")
+    #cur.execute("INSERT INTO Patients (pet_id, name, species_id, age, cuteness, agressiveness) VALUES (?, ?, ?, ?, ?, ?)", (0, 'Fluffle', 0, 3, 90, 100))
     conn.commit()
 
 # TASK 2
@@ -61,7 +61,22 @@ def add_pets_from_json(filename, cur, conn):
     json_data = json.loads(file_data)
 
     # THE REST IS UP TO YOU
-    pass
+    ped_id = 1
+    for item in json_data:
+        name = item['name']
+        species = item['species']
+        age = int(item['age'])
+        cuteness = int(item['cuteness'])
+        aggressiveness = int(item['aggressiveness'])
+
+        cur.execute("SELECT id from Species WHERE title = ?", (species,)) #(species,) is a tuple
+        species_id = int(cur.fetchone()[0])
+
+        cur.execute("INSERT INTO Patients (pet_id, name, species_id, age, cuteness, agressiveness) VALUES (?, ?, ?, ?, ?, ?)", (ped_id, name, species_id, age, cuteness, aggressiveness))
+
+        ped_id += 1
+    
+    conn.commit()
 
 # TASK 3
 # CODE TO OUTPUT NON-AGGRESSIVE PETS
